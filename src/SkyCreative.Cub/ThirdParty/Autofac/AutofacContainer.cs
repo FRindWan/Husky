@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Autofac.Builder;
-using SkyCreative.Cub.Componts;
+using SkyCreative.Cub.Components;
+using SkyCreative.Cub.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,13 +10,20 @@ using System.Threading.Tasks;
 
 namespace SkyCreative.Cub.ThirdParty.Autofacs
 {
-    public class AutofacContainer:Componts.IContainer
+    public class AutofacContainer: Components.IContainer
     {
         private Autofac.IContainer container;
 
         public AutofacContainer()
         {
             this.container = new ContainerBuilder().Build();
+        }
+
+        public AutofacContainer(ContainerBuilder builder)
+        {
+            Ensure.NotNull(builder, "builder");
+
+            this.container = builder.Build();
         }
 
         public void Register<TService>(LifeScope lifeScope = LifeScope.Transient)
@@ -25,7 +33,7 @@ namespace SkyCreative.Cub.ThirdParty.Autofacs
             builder.Update(container);
         }
 
-        public void Register<TInterface, TService>(LifeScope lifeScope = LifeScope.Transient)
+        public void Register<TInterface, TService>(LifeScope lifeScope = LifeScope.Transient)where TService:TInterface
         {
             ContainerBuilder builder = new ContainerBuilder();
             builder.RegisterType<TService>().As<TInterface>().SetLifeScope(lifeScope);
@@ -53,7 +61,7 @@ namespace SkyCreative.Cub.ThirdParty.Autofacs
             builder.Update(container);
         }
 
-        public void Register<TInterface, TService>(string name, LifeScope lifeScope = LifeScope.Transient)
+        public void Register<TInterface, TService>(string name, LifeScope lifeScope = LifeScope.Transient) where TService : TInterface
         {
             ContainerBuilder builder = new ContainerBuilder();
             builder.RegisterType<TService>().As<TInterface>().Named(name, typeof(TInterface)).SetLifeScope(lifeScope);
@@ -81,6 +89,17 @@ namespace SkyCreative.Cub.ThirdParty.Autofacs
                 builder.RegisterAssemblyTypes(assembly).AsImplementedInterfaces();
             else
                 builder.RegisterAssemblyTypes(assembly).Where(predicate).AsImplementedInterfaces();
+            builder.Update(container);
+        }
+
+        public void RegisterInstance<TInterface, TService>(TService instace, string serviceName = null) where TService : class, TInterface
+        {
+            ContainerBuilder builder = new ContainerBuilder();
+            
+            if (string.IsNullOrWhiteSpace(serviceName))
+                builder.RegisterInstance<TService>(instace).As<TInterface>();
+            else
+                builder.RegisterInstance<TService>(instace).As<TInterface>().Named<TInterface>(serviceName);
             builder.Update(container);
         }
 

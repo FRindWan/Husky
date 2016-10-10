@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SkyCreative.Cub.Componts
+namespace SkyCreative.Cub.Components
 {
-    public class Container:IContainer
+    public class Container
     {
         public static IContainer Current { get; private set; }
 

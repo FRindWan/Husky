@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SkyCreative.Cub.Componts
+namespace SkyCreative.Cub.Components
 {
     public interface IContainer
     {
@@ -26,6 +26,9 @@ namespace SkyCreative.Cub.Componts
         void Register(Type @interface, Type type, string name, LifeScope lifeScope = LifeScope.Transient);
 
         void Register(Assembly assembly,Func<Type,bool> predicate=null);
+
+        void RegisterInstance<TInterface, TService>(TService instace, string serviceName = null) 
+            where TService : class, TInterface;
 
         TService Resolver<TService>();
 
